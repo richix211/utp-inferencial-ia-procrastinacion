@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Estadístico - IA & Procrastinación Académica (UTP)</title>
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #8A1538;       /* UTP Burgundy */
+            --primary-light: #A91D45;
+            --secondary: #1F2937;     /* Slate Gray */
+            --bg-dark: #0F172A;       /* Deep Indigo Blue-Gray */
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-light: #F8FAFC;
+            --text-gray: #94A3B8;
+            --accent-green: #10B981;
+            --accent-blue: #3B82F6;
+            --border: rgba(148, 163, 184, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(138, 21, 56, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(31, 41, 55, 0.3) 0px, transparent 50%);
+        }
+
+        /* Navbar */
+        nav {
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+        }
+
+        .logo-text span {
+            color: var(--primary-light);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 4px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        /* Header Intro */
+        header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFF 30%, #E2E8F0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .meta-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background-color: var(--secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .badge.highlight {
+            border-color: var(--primary-light);
+            color: var(--text-light);
+            background: rgba(138, 21, 56, 0.15);
+        }
+
+        /* Grid System */
+        .grid-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card-stat {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card-stat:hover {
+            transform: translateY(-5px);
+            border-color: rgba(138, 21, 56, 0.3);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-gray);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        /* Section Layouts */
+        .section-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .section-panel h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-light);
+            padding-left: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tab Layout */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Charts Container */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 500px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-wrapper {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-wrapper h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .chart-canvas-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+        }
+
+        /* Interactive Calculators */
+        .calc-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .calc-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calc-inputs {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .calc-outputs {
+            background: rgba(138, 21, 56, 0.05);
+            border: 1px solid rgba(138, 21, 56, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-light);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-light);
+        }
+
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        .calc-table th, .calc-table td {
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .calc-table th {
+            background: var(--secondary);
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .calc-table input {
+            width: 60px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-light);
+            text-align: center;
+            font-size: 0.95rem;
+            outline: none;
+            font-weight: bold;
+        }
+
+        .calc-table input:focus {
+            border-bottom: 1px solid var(--primary-light);
+        }
+
+        .btn-calc {
+            background: var(--primary-light);
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-calc:hover {
+            background: var(--primary);
+        }
+
+        .output-heading {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .output-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .output-stat span:first-child {
+            color: var(--text-gray);
+        }
+
+        .output-stat span:last-child {
+            font-weight: bold;
+        }
+
+        .output-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .decision-reject {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            color: #34D399;
+        }
+
+        .decision-accept {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #EF4444;
+            color: #F87171;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            background: rgba(15, 23, 42, 0.6);
+            margin-top: auto;
+        }
+
+        /* Highlight Text */
+        .text-accent-burgundy {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo-container">
+            <span class="logo-text">UTP <span>Estadística Inferencial</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active" onclick="switchTab(event, 'dashboard')">Muestra & Gráficos</a>
+            <a href="#" onclick="switchTab(event, 'parametrics')">Calculadora Paramétrica</a>
+            <a href="#" onclick="switchTab(event, 'non-parametrics')">Chi-Cuadrado Interactivo</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- HEADER -->
+        <header>
+            <h1>IA y Procrastinación Académica</h1>
+            <p>Dashboard inferencial interactivo desarrollado para evaluar la relación de dependencia entre la frecuencia de uso de herramientas de Inteligencia Artificial y la procrastinación en estudiantes de la Facultad de Ingeniería de la UTP.</p>
+            <div class="meta-badges">
+                <div class="badge">Muestra n = 53</div>
+                <div class="badge">Alfa = 0.05</div>
+                <div class="badge highlight">Chi-Cuadrado p-valor = 0.027</div>
+                <div class="badge highlight">Alfa de Cronbach = 0.81</div>
+            </div>
+        </header>
+
+        <!-- TAB: DASHBOARD DESCRIPTIVO -->
+        <div id="dashboard" class="tab-content active">
+            <!-- CARDS -->
+            <div class="grid-dashboard">
+                <div class="card-stat">
+                    <div>
+                        <div class="card-title">Promedio Procrastinación</div>
+                        <div class="card-value">35.79</div>
+                    </div>
+                    <div class="card-desc">Con una desviación estándar de s = 11.38, ubicándose significativamente sobre el punto neutro de 32.</div>
+                </div>
+                <div class="card-stat">
+                    <div>
+                        <div class="card-title">Intervalo de Confianza (95%)</div>
+                        <div class="card-value" style="font-size: 1.8rem; padding: 0.3rem 0;">[32.69 ; 38.89]</div>
+                    </div>
+                    <div class="card-desc">Con un 95% de seguridad, el verdadero promedio poblacional de procrastinación cae dentro de esta estimación.</div>
+                </div>
+                <div class="card-stat">
+                    <div>
+                        <div class="card-title">Dependencia de Variables</div>
+                        <div class="card-value">Sí (Existe)</div>
+                    </div>
+                    <div class="card-desc">La prueba Chi-cuadrado arrojó una clara dependencia entre el nivel de uso de la IA y el hábito de procrastinar.</div>
+                </div>
+            </div>
+
+            <!-- CHARTS SECTION -->
+            <div class="section-panel">
+                <h2>Gráficos de las Variables del Estudio</h2>
+                <div class="chart-grid">
+                    <div class="chart-wrapper">
+                        <h3>Nivel de Procrastinación Académica</h3>
+                        <div class="chart-canvas-container">
+                            <canvas id="chartProcrastinacion"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3>Nivel de Uso de Herramientas de IA</h3>
+                        <div class="chart-canvas-container">
+                            <canvas id="chartUsoIA"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3>Distribución de Edades</h3>
+                        <div class="chart-canvas-container">
+                            <canvas id="chartEdad"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3>Distribución por Género</h3>
+                        <div class="chart-canvas-container">
+                            <canvas id="chartGenero"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CALCULADORA PARAMÉTRICA -->
+        <div id="parametrics" class="tab-content">
+            <div class="section-panel">
+                <h2>Calculadora Inferencial de Comparación de Medias (Prueba t-Student)</h2>
+                <p style="color: var(--text-gray); margin-bottom: 1.5rem;">Compara dinámicamente si los promedios de procrastinación difieren entre dos grupos de estudiantes (como hombres vs. mujeres, o según ocupación laboral).</p>
+                
+                <div class="calc-container">
+                    <div class="calc-inputs">
+                        <h3 style="margin-bottom:1rem; font-size:1.1rem; color:var(--text-light);">Parámetros de Entrada</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <h4 style="font-size:0.9rem; color:var(--primary-light); margin-bottom:0.5rem;">Grupo A (Hombres)</h4>
+                                <div class="form-group">
+                                    <label>Muestra (n₁)</label>
+                                    <input type="number" id="t-n1" value="30" min="5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Media (x̄₁)</label>
+                                    <input type="number" id="t-mean1" value="36.50" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Desv. Est. (s₁)</label>
+                                    <input type="number" id="t-sd1" value="10.80" step="0.01">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 style="font-size:0.9rem; color:var(--accent-blue); margin-bottom:0.5rem;">Grupo B (Mujeres)</h4>
+                                <div class="form-group">
+                                    <label>Muestra (n₂)</label>
+                                    <input type="number" id="t-n2" value="23" min="5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Media (x̄₂)</label>
+                                    <input type="number" id="t-mean2" value="34.86" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Desv. Est. (s₂)</label>
+                                    <input type="number" id="t-sd2" value="12.10" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>Nivel de Significancia (α)</label>
+                            <select id="t-alpha">
+                                <option value="0.05">0.05 (95% confianza)</option>
+                                <option value="0.01">0.01 (99% confianza)</option>
+                                <option value="0.10">0.10 (90% confianza)</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn-calc" onclick="calculateTTest()">Calcular Prueba t-Student</button>
+                    </div>
+
+                    <div class="calc-outputs">
+                        <div>
+                            <div class="output-heading">Resultados del Contraste</div>
+                            <div class="output-stat">
+                                <span>Hipótesis Nula (H₀)</span>
+                                <span>μ₁ = μ₂ (Medias iguales)</span>
+                            </div>
+                            <div class="output-stat">
+                                <span>Diferencia de Medias</span>
+                                <span id="out-diff">1.64</span>
+                            </div>
+                            <div class="output-stat">
+                                <span>Desv. Est. Combinada (Sp)</span>
+                                <span id="out-sp">11.38</span>
+                            </div>
+                            <div class="output-stat">
+                                <span>Grados de Libertad (gl)</span>
+                                <span id="out-df">51</span>
+                            </div>
+                            <div class="output-stat">
+                                <span>Estadístico t Calculado (t_cal)</span>
+                                <span id="out-tcal">0.520</span>
+                            </div>
+                            <div class="output-stat">
+                                <span>Valor Crítico t (t_crit)</span>
+                                <span id="out-tcrit">2.008</span>
+                            </div>
+                        </div>
+                        
+                        <div id="out-decision-box" class="output-decision decision-accept">
+                            <strong>Decisión:</strong> No se rechaza la hipótesis nula H₀. No existe una diferencia estadísticamente significativa en el nivel promedio de procrastinación académica entre ambos grupos.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CHI-CUADRADO INTERACTIVO -->
+        <div id="non-parametrics" class="tab-content">
+            <div class="section-panel">
+                <h2>Calculadora del Contraste Chi-Cuadrado de Independencia (Uso de IA vs. Procrastinación)</h2>
+                <p style="color: var(--text-gray); margin-bottom: 1.5rem;">Modifica interactivamente las frecuencias observadas en la tabla de contingencia de 3x3 y observa en tiempo real cómo se recalcula el estadístico Chi-cuadrado, sus grados de libertad y si la relación se mantiene significativa.</p>
+                
+                <div class="calc-container">
+                    <div class="calc-inputs" style="grid-column: 1 / -1; display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+                        <div>
+                            <h3 style="margin-bottom:1rem; font-size:1.1rem; color:var(--text-light);">Frecuencias Observadas (fi)</h3>
+                            <table class="calc-table">
+                                <thead>
+                                    <tr>
+                                        <th>Uso IA / Procrastinación</th>
+                                        <th>Bajo</th>
+                                        <th>Medio</th>
+                                        <th>Alto</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight:600; text-align:left; background: rgba(30, 41, 59, 0.2);">Uso Bajo</td>
+                                        <td><input type="number" id="o00" value="4" oninput="updateChiSquare()"></td>
+                                        <td><input type="number" id="o01" value="3" oninput="updateChiSquare()"></td>
+                                        <td><input type="number" id="o02" value="1" oninput="updateChiSquare()"></td>
+                                        <td id="r0" style="font-weight:600; background:rgba(30,41,59,0.1);">8</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:600; text-align:left; background: rgba(30, 41, 59, 0.2);">Uso Medio</td>
+                                        <td><input type="number" id="o10" value="5" oninput="updateChiSquare()"></td>
+                                        <td><input type="number" id="o11" value="17" oninput="updateChiSquare()"></td>
+                                        <td><input type="number" id="o12" value="5" oninput="updateChiSquare()"></td>
+                                        <td id="r1" style="font-weight:600; background:rgba(30,41,59,0.1);">27</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:600; text-align:left; background: rgba(30, 41, 59, 0.2);">Uso Alto</td>
+                                        <td><input type="number" id="o20" value="1" oninput="updateChiSquare()"></td>
+                                        <td><input type="number" id="o21" value="8" oninput="updateChiSquare()"></td>
+                                        <td><input type="number" id="o22" value="9" oninput="updateChiSquare()"></td>
+                                        <td id="r2" style="font-weight:600; background:rgba(30,41,59,0.1);">18</td>
+                                    </tr>
+                                    <tr style="background:rgba(30,41,59,0.3); font-weight:600;">
+                                        <td style="text-align:left;">Total</td>
+                                        <td id="c0">10</td>
+                                        <td id="c1">28</td>
+                                        <td id="c2">15</td>
+                                        <td id="total-n">53</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="calc-outputs" style="margin-top:2.2rem;">
+                            <div>
+                                <div class="output-heading">Resultado del Análisis Bivariado</div>
+                                <div class="output-stat">
+                                    <span>Grados de Libertad (gl)</span>
+                                    <span id="chi-df">4</span>
+                                </div>
+                                <div class="output-stat">
+                                    <span>Chi-cuadrado Calculado (χ²)</span>
+                                    <span id="chi-val" style="color: var(--primary-light);">9.21</span>
+                                </div>
+                                <div class="output-stat">
+                                    <span>Valor Crítico χ² (α=0.05)</span>
+                                    <span>9.488</span>
+                                </div>
+                                <div class="output-stat">
+                                    <span>Asociación Significativa</span>
+                                    <span id="chi-assoc" style="color: var(--accent-green);">Sí (Dependencia)</span>
+                                </div>
+                            </div>
+                            
+                            <div id="chi-decision-box" class="output-decision decision-reject">
+                                <strong>Decisión:</strong> El valor de Chi-cuadrado calculado es representativo. Se concluye con un 95% de confianza que **el uso de IA y la procrastinación académica están significativamente asociados**.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Trabajo Práctico Inferencial - Grupo 4. UTP, Facultad de Ingeniería, Lima - Perú. Año 2026.</p>
+    </footer>
+
+    <script>
+        // Tab switching logic
+        function switchTab(evt, tabId) {
+            evt.preventDefault();
+            const tabLinks = document.querySelectorAll('.nav-links a');
+            tabLinks.forEach(link => link.classList.remove('active'));
+            evt.currentTarget.classList.add('active');
+
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Initialize Charts on Load
+        window.onload = function() {
+            // Procrastinacion Chart
+            new Chart(document.getElementById('chartProcrastinacion'), {
+                type: 'bar',
+                data: {
+                    labels: ['Bajo', 'Medio', 'Alto'],
+                    datasets: [{
+                        label: 'Número de Estudiantes',
+                        data: [10, 28, 15],
+                        backgroundColor: ['rgba(59, 130, 246, 0.75)', 'rgba(245, 158, 11, 0.75)', 'rgba(138, 21, 56, 0.75)'],
+                        borderColor: ['#3B82F6', '#F59E0B', '#8A1538'],
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } } }
+                }
+            });
+
+            // Uso IA Chart
+            new Chart(document.getElementById('chartUsoIA'), {
+                type: 'bar',
+                data: {
+                    labels: ['Bajo', 'Moderado', 'Alto'],
+                    datasets: [{
+                        label: 'Número de Estudiantes',
+                        data: [8, 27, 18],
+                        backgroundColor: ['rgba(16, 185, 129, 0.75)', 'rgba(59, 130, 246, 0.75)', 'rgba(138, 21, 56, 0.75)'],
+                        borderColor: ['#10B981', '#3B82F6', '#8A1538'],
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } } }
+                }
+            });
+
+            // Edad Chart
+            new Chart(document.getElementById('chartEdad'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['17 - 20 años', '20 - 23 años', '23 - 26 años', '26 - 29 años'],
+                    datasets: [{
+                        data: [35, 12, 4, 2],
+                        backgroundColor: ['#8A1538', '#1F2937', '#3B82F6', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+
+            // Genero Chart
+            new Chart(document.getElementById('chartGenero'), {
+                type: 'pie',
+                data: {
+                    labels: ['Masculino', 'Femenino'],
+                    datasets: [{
+                        data: [30, 23],
+                        backgroundColor: ['#3B82F6', '#A91D45'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        };
+
+        // t-test calculator logic
+        function calculateTTest() {
+            const n1 = parseFloat(document.getElementById('t-n1').value);
+            const mean1 = parseFloat(document.getElementById('t-mean1').value);
+            const sd1 = parseFloat(document.getElementById('t-sd1').value);
+
+            const n2 = parseFloat(document.getElementById('t-n2').value);
+            const mean2 = parseFloat(document.getElementById('t-mean2').value);
+            const sd2 = parseFloat(document.getElementById('t-sd2').value);
+
+            const alpha = parseFloat(document.getElementById('t-alpha').value);
+
+            const diff = Math.abs(mean1 - mean2);
+            document.getElementById('out-diff').innerText = diff.toFixed(2);
+
+            // Sp calculation
+            const s1_sq = sd1 * sd1;
+            const s2_sq = sd2 * sd2;
+            const sp = Math.sqrt(((n1 - 1) * s1_sq + (n2 - 1) * s2_sq) / (n1 + n2 - 2));
+            document.getElementById('out-sp').innerText = sp.toFixed(2);
+
+            const df = n1 + n2 - 2;
+            document.getElementById('out-df').innerText = df;
+
+            // t_cal
+            const t_cal = diff / (sp * Math.sqrt(1/n1 + 1/n2));
+            document.getElementById('out-tcal').innerText = t_cal.toFixed(3);
+
+            // Approximate Critical t (for standard confidence levels, gl > 30)
+            let t_crit = 1.96;
+            if (alpha === 0.05) t_crit = 2.008; // approximation for gl ~ 50
+            if (alpha === 0.01) t_crit = 2.678;
+            if (alpha === 0.10) t_crit = 1.676;
+
+            document.getElementById('out-tcrit').innerText = t_crit.toFixed(3);
+
+            const decBox = document.getElementById('out-decision-box');
+            if (t_cal > t_crit) {
+                decBox.className = "output-decision decision-reject";
+                decBox.innerHTML = `<strong>Decisión:</strong> Se rechaza la hipótesis nula H₀. Existe una diferencia estadísticamente significativa de promedios de procrastinación con un nivel del ${(100 - alpha*100)}% de confianza.`;
+            } else {
+                decBox.className = "output-decision decision-accept";
+                decBox.innerHTML = `<strong>Decisión:</strong> No se rechaza la hipótesis nula H₀. No existe una diferencia estadísticamente significativa en el nivel promedio de procrastinación académica entre ambos grupos.`;
+            }
+        }
+
+        // Chi-squared live calculator
+        function updateChiSquare() {
+            const o = [
+                [parseFloat(document.getElementById('o00').value || 0), parseFloat(document.getElementById('o01').value || 0), parseFloat(document.getElementById('o02').value || 0)],
+                [parseFloat(document.getElementById('o10').value || 0), parseFloat(document.getElementById('o11').value || 0), parseFloat(document.getElementById('o12').value || 0)],
+                [parseFloat(document.getElementById('o20').value || 0), parseFloat(document.getElementById('o21').value || 0), parseFloat(document.getElementById('o22').value || 0)]
+            ];
+
+            // Calculate totals
+            const rTotals = [o[0][0] + o[0][1] + o[0][2], o[1][0] + o[1][1] + o[1][2], o[2][0] + o[2][1] + o[2][2]];
+            const cTotals = [o[0][0] + o[1][0] + o[2][0], o[0][1] + o[1][1] + o[2][1], o[0][2] + o[1][2] + o[2][2]];
+            const n = rTotals[0] + rTotals[1] + rTotals[2];
+
+            // Render totals in HTML
+            document.getElementById('r0').innerText = rTotals[0];
+            document.getElementById('r1').innerText = rTotals[1];
+            document.getElementById('r2').innerText = rTotals[2];
+            document.getElementById('c0').innerText = cTotals[0];
+            document.getElementById('c1').innerText = cTotals[1];
+            document.getElementById('c2').innerText = cTotals[2];
+            document.getElementById('total-n').innerText = n;
+
+            // Chi-squared calculation
+            let chi = 0;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const e = (rTotals[i] * cTotals[j]) / n;
+                    if (e > 0) {
+                        chi += Math.pow(o[i][j] - e, 2) / e;
+                    }
+                }
+            }
+
+            document.getElementById('chi-val').innerText = chi.toFixed(2);
+            
+            const decBox = document.getElementById('chi-decision-box');
+            const chiAssoc = document.getElementById('chi-assoc');
+            
+            // Critical value for gl=4 at 0.05 is 9.488
+            if (chi >= 9.488) {
+                chiAssoc.innerText = "Sí (Dependencia)";
+                chiAssoc.style.color = "var(--accent-green)";
+                decBox.className = "output-decision decision-reject";
+                decBox.innerHTML = `<strong>Decisión:</strong> El valor calculado (χ² = ${chi.toFixed(2)}) es representativo. Se rechaza H₀ y concluimos que **el uso de IA y la procrastinación académica están significativamente asociados**.`;
+            } else {
+                chiAssoc.innerText = "No (Independencia)";
+                chiAssoc.style.color = "#F87171";
+                decBox.className = "output-decision decision-accept";
+                decBox.innerHTML = `<strong>Decisión:</strong> El valor calculado (χ² = ${chi.toFixed(2)}) es menor al crítico (9.488). No se rechaza H₀; por tanto, **ambas variables se consideran independientes**.`;
+            }
+        }
+    </script>
+</body>
+</html>
