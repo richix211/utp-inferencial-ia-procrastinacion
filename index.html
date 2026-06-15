@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Estadístico - IA & Procrastinación Académica (UTP)</title>
+    <title>Dashboard & Presentación - IA & Procrastinación Académica (UTP)</title>
     <!-- Google Fonts: Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js CDN -->
@@ -194,7 +194,7 @@
             line-height: 1.4;
         }
 
-        /* Section Layouts */
+        /* Section Panel */
         .section-panel {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
@@ -210,12 +210,9 @@
             margin-bottom: 1.5rem;
             border-left: 4px solid var(--primary-light);
             padding-left: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        /* Tab Layout */
+        /* Tab Content */
         .tab-content {
             display: none;
         }
@@ -230,12 +227,6 @@
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 2rem;
             margin-top: 1rem;
-        }
-
-        @media (max-width: 500px) {
-            .chart-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         .chart-wrapper {
@@ -417,6 +408,136 @@
             color: #F87171;
         }
 
+        /* PRESENTATION SLIDES STYLING */
+        .slides-container {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            min-height: 550px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1.5rem;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out forwards;
+            flex-grow: 1;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-header {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+
+        .slide-tag {
+            color: var(--primary-light);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .slide-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-light);
+        }
+
+        .slide-body {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-gray);
+        }
+
+        .slide-body p {
+            margin-bottom: 1rem;
+        }
+
+        .slide-body ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        .slides-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-nav-slide {
+            background: var(--secondary);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav-slide:hover:not(:disabled) {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+
+        .btn-nav-slide:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .slide-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .slide-dot.active {
+            background: var(--primary-light);
+            transform: scale(1.25);
+        }
+
+        .keyboard-hint {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Footer */
         footer {
             border-top: 1px solid var(--border);
@@ -428,10 +549,28 @@
             margin-top: auto;
         }
 
-        /* Highlight Text */
-        .text-accent-burgundy {
-            color: var(--primary-light);
-            font-weight: 600;
+        /* Accent Highlight */
+        .accent-hl {
+            background: linear-gradient(120deg, rgba(138, 21, 56, 0.2) 0%, rgba(138, 21, 56, 0) 100%);
+            border-left: 4px solid var(--primary-light);
+            padding: 0.75rem 1rem;
+            border-radius: 0 8px 8px 0;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Two column layout in slide */
+        .slide-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .slide-split {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
@@ -443,7 +582,8 @@
             <span class="logo-text">UTP <span>Estadística Inferencial</span></span>
         </div>
         <div class="nav-links">
-            <a href="#" class="active" onclick="switchTab(event, 'dashboard')">Muestra & Gráficos</a>
+            <a href="#" class="active" onclick="switchTab(event, 'presentation')">Presentación PPT</a>
+            <a href="#" onclick="switchTab(event, 'dashboard')">Muestra & Gráficos</a>
             <a href="#" onclick="switchTab(event, 'parametrics')">Calculadora Paramétrica</a>
             <a href="#" onclick="switchTab(event, 'non-parametrics')">Chi-Cuadrado Interactivo</a>
         </div>
@@ -463,8 +603,330 @@
             </div>
         </header>
 
+        <!-- TAB: SLIDESHOW PRESENTATION -->
+        <div id="presentation" class="tab-content active">
+            <div class="slides-container">
+                
+                <!-- SLIDE 1: PORTADA -->
+                <div class="slide active">
+                    <div class="slide-header" style="border:none; text-align:center; margin-bottom:2rem;">
+                        <span class="slide-tag">Universidad Tecnológica del Perú</span>
+                        <h2 class="slide-title" style="font-size: 2.25rem; line-height: 1.3; color: var(--text-light); margin-bottom: 1rem;">
+                            Relación entre el Uso de IA y la Procrastinación Académica
+                        </h2>
+                        <p style="color: var(--primary-light); font-weight:700; font-size: 1.1rem; letter-spacing: 1px;">
+                            AVANCE DE PROYECTO FINAL 2
+                        </p>
+                    </div>
+                    <div class="slide-body" style="text-align: center;">
+                        <p style="font-size:1.1rem; max-width: 600px; margin: 0 auto 2rem auto; color: var(--text-gray);">
+                            Estudio cuantitativo inferencial en estudiantes de la Facultad de Ingeniería de la UTP.
+                        </p>
+                        <div style="display: inline-block; background:rgba(30,41,59,0.5); border: 1px solid var(--border); padding: 1.25rem; border-radius: 12px; text-align:left;">
+                            <strong style="color: var(--text-light); display:block; margin-bottom:0.5rem; font-size:0.95rem;">INTEGRANTES (GRUPO 4):</strong>
+                            <div style="font-size:0.9rem; color: var(--text-gray); display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;">
+                                <span>• Cornejo Villa, Jean Paul R.</span>
+                                <span>• Sullon Mendoza, Juan Pablo</span>
+                                <span>• Antonio Tamariz, Mejia</span>
+                                <span>• De los Angeles Flores, Fatima</span>
+                                <span>• Tocto Tomapasca, Elvis E.</span>
+                            </div>
+                            <div style="font-size: 0.9rem; margin-top: 1rem; color: var(--text-light); border-top:1px solid var(--border); padding-top:0.5rem;">
+                                <strong>Docente:</strong> Carmen Roxana Saldaña Vasquez
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: INTRODUCCIÓN Y PROBLEMA -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">02 / Contexto</span>
+                        <h2 class="slide-title">El Problema de Investigación</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split">
+                            <div>
+                                <p style="font-weight: 500; color: var(--text-light); font-size:1.2rem; margin-bottom: 1.25rem;">
+                                    ¿La Inteligencia Artificial fomenta el desarrollo académico o el aplazamiento de tareas?
+                                </p>
+                                <p>Las herramientas de Inteligencia Artificial (chatbots cognitivos, generadores de código) han irrumpido masivamente en las universidades peruanas, ofreciendo automatización inmediata de tareas complejas.</p>
+                                <p>Sin embargo, la inmediatez y facilidad de las respuestas de la IA pueden alterar la autorregulación cognitiva, facilitando que el alumno postergue el estudio reflexivo en favor de soluciones instantáneas a último minuto.</p>
+                            </div>
+                            <div>
+                                <div class="accent-hl">
+                                    <strong>Pregunta Central:</strong><br>
+                                    ¿Existe una relación de dependencia estadísticamente significativa entre el nivel de uso de Inteligencia Artificial y la Procrastinación Académica en estudiantes de Ingeniería de la UTP?
+                                </div>
+                                <div class="accent-hl" style="border-left-color: var(--accent-blue); margin-top:1.5rem;">
+                                    <strong>Construcción del Hábito:</strong><br>
+                                    El uso no planificado ni ético de la IA puede servir como una "vía de escape" frente a la ansiedad evaluativa, incentivando patrones severos de procrastinación.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: OBJETIVOS -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">03 / Objetivos</span>
+                        <h2 class="slide-title">Propósito del Estudio</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split">
+                            <div>
+                                <h3 style="color: var(--primary-light); font-size:1.25rem; margin-bottom:0.75rem;">Objetivo General</h3>
+                                <div class="accent-hl" style="font-size:1.15rem; line-height: 1.5; margin-bottom:1.5rem;">
+                                    Determinar la relación estadística de dependencia y el impacto del nivel de uso de herramientas de Inteligencia Artificial en los grados de procrastinación académica en los estudiantes de Ingeniería de la UTP.
+                                </div>
+                            </div>
+                            <div>
+                                <h3 style="color: var(--accent-blue); font-size:1.25rem; margin-bottom:0.75rem;">Objetivos Específicos</h3>
+                                <ul>
+                                    <li>Describir demográficamente y categorizar la muestra (n = 53).</li>
+                                    <li>Calcular el intervalo de confianza (95%) para estimar el promedio real de procrastinación poblacional.</li>
+                                    <li>Comparar promedios de procrastinación entre géneros (masculino/femenino) y condiciones laborales.</li>
+                                    <li>Aplicar pruebas no paramétricas robustas (Kolmogorov-Smirnov, Rachas, U de Mann-Whitney y Chi-Cuadrado de Independencia).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: METODOLOGÍA -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">04 / Metodología</span>
+                        <h2 class="slide-title">Diseño de la Investigación</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split">
+                            <div>
+                                <table class="calc-table" style="margin-top:0.5rem;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="font-weight:600; text-align:left; background:var(--secondary);">Enfoque</td>
+                                            <td style="text-align:left;">Cuantitativo</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight:600; text-align:left; background:var(--secondary);">Nivel</td>
+                                            <td style="text-align:left;">Básico - Correlacional</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight:600; text-align:left; background:var(--secondary);">Diseño</td>
+                                            <td style="text-align:left;">No Experimental - Transversal</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight:600; text-align:left; background:var(--secondary);">Muestra (n)</td>
+                                            <td style="text-align:left;">53 estudiantes de Ingeniería de la UTP</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight:600; text-align:left; background:var(--secondary);">Muestreo</td>
+                                            <td style="text-align:left;">No probabilístico por conveniencia</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <h3 style="color: var(--primary-light); font-size:1.1rem; margin-bottom: 0.5rem;">Confiabilidad de Instrumentos (Alfa de Cronbach)</h3>
+                                <p>Las escalas psicométricas aplicadas para recolectar información fueron validadas obteniendo una consistencia interna sobresaliente:</p>
+                                <div class="accent-hl" style="margin-bottom:0.75rem;">
+                                    <strong>Escala Procrastinación Académica:</strong> α = 0.81 (Buena consistencia)
+                                </div>
+                                <div class="accent-hl" style="border-left-color:var(--accent-blue);">
+                                    <strong>Escala de Uso de Herramientas de IA:</strong> α = 0.88 (Muy alta consistencia)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: JUSTIFICACIÓN DE PRUEBAS -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">05 / Rigor Inferencial</span>
+                        <h2 class="slide-title">¿Por qué Paramétricas y No Paramétricas?</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split">
+                            <div>
+                                <h3 style="color: var(--primary-light); font-size:1.15rem; margin-bottom:0.5rem;">Pruebas Paramétricas (Supuestos cumplidos)</h3>
+                                <p>Se utilizaron bajo el amparo del Teorema del Límite Central (n = 53 > 30) y asumiendo normalidad en la variable de razón:</p>
+                                <ul style="font-size:0.95rem;">
+                                    <li><strong>t de Student (una media):</strong> para contrastar si el promedio poblacional supera un límite neutro (μ > 32).</li>
+                                    <li><strong>F de Fisher (razón de varianzas):</strong> indispensable para validar homogeneidad de variabilidad antes de comparar grupos.</li>
+                                    <li><strong>t de Student (dos medias):</strong> para comparar los promedios conductuales de hombres frente a mujeres.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 style="color: var(--accent-blue); font-size:1.15rem; margin-bottom:0.5rem;">Pruebas No Paramétricas (Validación y Categóricas)</h3>
+                                <p>Indispensables para contrastar supuestos y analizar variables ordinales agrupadas:</p>
+                                <ul style="font-size:0.95rem;">
+                                    <li><strong>Kolmogorov-Smirnov:</strong> prueba de normalidad de distribución libre para variables cuantitativas continuas.</li>
+                                    <li><strong>Rachas:</strong> evalúa aleatoriedad e independencia de las observaciones.</li>
+                                    <li><strong>U de Mann-Whitney:</strong> contraste robusto de medianas por género.</li>
+                                    <li><strong>Chi-Cuadrado de Independencia:</strong> prueba fundamental para validar asociación de variables cualitativas ordinales.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: ANÁLISIS DESCRIPTIVO HIGHLIGHTS -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">06 / Descriptivos</span>
+                        <h2 class="slide-title">Hallazgos Descriptivos del Estudio</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split" style="grid-template-columns: 1.2fr 0.8fr;">
+                            <div>
+                                <p><strong>• Demografía Muestral:</strong> El 56.60% son hombres y el 43.40% mujeres. El 66.04% es menor de 20 años y el 88.68% es soltero. El 35.80% trabaja jornada completa (8 horas o más), frente a un 43.40% que no labora.</p>
+                                <p><strong>• Nivel de Procrastinación Académica:</strong> Más de la mitad de los estudiantes se ubican en un nivel medio de procrastinación (52.80%), mientras que el 28.30% presenta procrastinación alta, denotando hábitos recurrentes de postergación.</p>
+                                <p><strong>• Penetración del Uso de IA:</strong> Solo el 15.10% presenta un uso bajo. El 50.90% reporta un uso moderado y el 34.00% un uso intensivo y diario de estas tecnologías cognitivas.</p>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:0.75rem; justify-content:center;">
+                                <div class="accent-hl">
+                                    <strong>81.10%</strong> de los alumnos posee procrastinación media o alta.
+                                </div>
+                                <div class="accent-hl" style="border-left-color: var(--accent-blue);">
+                                    <strong>84.90%</strong> de los alumnos usa IA de forma moderada a intensiva.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: PRUEBAS PARAMÉTRICAS -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">07 / Inferencial</span>
+                        <h2 class="slide-title">Resultados: Pruebas Paramétricas</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split">
+                            <div>
+                                <h3 style="color:var(--primary-light); font-size:1.1rem; margin-bottom:0.5rem;">1. Promedio de Procrastinación General</h3>
+                                <p>Evaluamos si μ > 32 (procrastinación moderada a alta):</p>
+                                <div style="background:rgba(15,23,42,0.3); padding:0.75rem; border-radius:8px; font-size:0.95rem; line-height:1.4; margin-bottom:1rem;">
+                                    • t_cal = 2.425 > t_crit = 1.674<br>
+                                    • <strong>Decisión:</strong> Se rechaza H₀.<br>
+                                    • <strong>Conclusión:</strong> El promedio de procrastinación académica de la población es significativamente mayor a 32 puntos.
+                                </div>
+                            </div>
+                            <div>
+                                <h3 style="color:var(--accent-blue); font-size:1.1rem; margin-bottom:0.5rem;">2. Comparación por Género (Masculino vs. Femenino)</h3>
+                                <p>Evaluamos si el promedio difiere por sexo:</p>
+                                <div style="background:rgba(15,23,42,0.3); padding:0.75rem; border-radius:8px; font-size:0.95rem; line-height:1.4;">
+                                    • Razón de Varianzas: F_cal = 1.255 < 2.15 (Varianzas Homogéneas).<br>
+                                    • t_cal = 0.520 (dentro del rango crítico [-2.008, 2.008]).<br>
+                                    • <strong>Decisión:</strong> No se rechaza H₀.<br>
+                                    • <strong>Conclusión:</strong> No existe una diferencia significativa en el promedio de procrastinación entre hombres y mujeres de la UTP.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: PRUEBAS NO PARAMÉTRICAS -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">08 / Inferencial</span>
+                        <h2 class="slide-title">Resultados: Pruebas No Paramétricas</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split">
+                            <div>
+                                <h3 style="color:var(--primary-light); font-size:1.1rem; margin-bottom:0.5rem;">1. Prueba de Normalidad de Kolmogorov-Smirnov</h3>
+                                <p>Para evaluar la normalidad de la muestra cuantitativa de procrastinación:</p>
+                                <div style="background:rgba(15,23,42,0.3); padding:0.75rem; border-radius:8px; font-size:0.95rem; line-height:1.4; margin-bottom:1rem;">
+                                    • D_max = 0.112 , p-valor = 0.092 > 0.05<br>
+                                    • <strong>Decisión:</strong> No se rechaza H₀.<br>
+                                    • <strong>Conclusión:</strong> Los puntajes provienen de una población con distribución normal. Valida las pruebas paramétricas previas.
+                                </div>
+                            </div>
+                            <div>
+                                <h3 style="color:var(--accent-blue); font-size:1.1rem; margin-bottom:0.5rem;">2. Prueba de Rachas para Aleatoriedad</h3>
+                                <p>Evalúa si la recolección de datos posee sesgos sistemáticos:</p>
+                                <div style="background:rgba(15,23,42,0.3); padding:0.75rem; border-radius:8px; font-size:0.95rem; line-height:1.4;">
+                                    • Median point = 36 , Total Rachas = 28<br>
+                                    • Z_cal = 0.141 (dentro de [-1.96, 1.96])<br>
+                                    • <strong>Decisión:</strong> No se rechaza H₀.<br>
+                                    • <strong>Conclusión:</strong> Se confirma que el muestreo y obtención de los datos fue completamente aleatorio.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: CONTRASTE PRINCIPAL CHI-CUADRADO -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">09 / Bivariado</span>
+                        <h2 class="slide-title">El Hallazgo Principal: Prueba Chi-Cuadrado</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split" style="grid-template-columns: 1fr 1fr;">
+                            <div>
+                                <p style="font-weight:600; color:var(--text-light); font-size:1.1rem;">Uso de IA vs. Procrastinación Académica (Tabla 3x3)</p>
+                                <p>Evaluamos si el nivel de uso de herramientas de IA y la procrastinación académica están asociados.</p>
+                                <div class="accent-hl" style="margin-top:1rem; font-size:1.1rem;">
+                                    • χ² calculado = 9.21 (gl = 4)<br>
+                                    • <strong>p-valor = 0.027 < 0.05</strong>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="output-decision decision-reject" style="margin-top:0.5rem; font-size:1.05rem;">
+                                    <strong>Conclusión Inferencial:</strong><br>
+                                    A un nivel de confianza del 95%, **se rechaza la hipótesis de independencia**. Existe una relación de dependencia significativa. El uso frecuente e intensivo de IA para resolver entregables rápidos y automáticos se asocia con un mayor grado de procrastinación académica.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: CONCLUSIONES Y RECOMENDACIONES -->
+                <div class="slide">
+                    <div class="slide-header">
+                        <span class="slide-tag">10 / Conclusiones</span>
+                        <h2 class="slide-title">Cierre y Recomendaciones</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="slide-split">
+                            <div>
+                                <h3 style="color:var(--primary-light); font-size:1.15rem; margin-bottom:0.5rem;">Conclusiones Clave</h3>
+                                <ul style="font-size:0.95rem;">
+                                    <li>Existe dependencia significativa (p-valor = 0.027) entre el uso de herramientas de IA y la procrastinación.</li>
+                                    <li>Las diferencias por género o situación laboral de los estudiantes no son significativas en los niveles de procrastinación.</li>
+                                    <li>Las pruebas de normalidad y aleatoriedad validaron la calidad representativa interna del muestreo.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 style="color:var(--accent-blue); font-size:1.15rem; margin-bottom:0.5rem;">Propuestas Académicas UTP</h3>
+                                <ul style="font-size:0.95rem;">
+                                    <li><strong>Talleres de autorregulación y gestión del tiempo:</strong> educar a los alumnos en el uso ético y planificado de la IA (como apoyo, no como reemplazo cognitivo).</li>
+                                    <li><strong>Estrategias evaluativas complejas:</strong> diseñar rúbricas que exijan mayor juicio crítico, sustentaciones en clase presencial y análisis de lógica estructurada.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NAVIGATION BUTTONS AND DOTS -->
+                <div class="slides-nav">
+                    <button class="btn-nav-slide" id="btn-prev" onclick="changeSlide(-1)">Anterior</button>
+                    <div class="slide-dots" id="slide-dots-container">
+                        <!-- Dots will be populated by JS -->
+                    </div>
+                    <button class="btn-nav-slide" id="btn-next" onclick="changeSlide(1)">Siguiente</button>
+                </div>
+            </div>
+            <div class="keyboard-hint">Tip: Puedes usar las flechas del teclado (← / →) para navegar por las diapositivas.</div>
+        </div>
+
         <!-- TAB: DASHBOARD DESCRIPTIVO -->
-        <div id="dashboard" class="tab-content active">
+        <div id="dashboard" class="tab-content">
             <!-- CARDS -->
             <div class="grid-dashboard">
                 <div class="card-stat">
@@ -526,7 +988,7 @@
         <div id="parametrics" class="tab-content">
             <div class="section-panel">
                 <h2>Calculadora Inferencial de Comparación de Medias (Prueba t-Student)</h2>
-                <p style="color: var(--text-gray); margin-bottom: 1.5rem;">Compara dinámicamente si los promedios de procrastinación difieren entre dos grupos de estudiantes (como hombres vs. mujeres, o según ocupación laboral).</p>
+                <p style="color: var(--text-gray); margin-bottom: 1.5rem;">Compara dinámicamente si los promedios de procrastinación diferen entre dos grupos de estudiantes (como hombres vs. mujeres, o según ocupación laboral).</p>
                 
                 <div class="calc-container">
                     <div class="calc-inputs">
@@ -689,7 +1151,7 @@
                             </div>
                             
                             <div id="chi-decision-box" class="output-decision decision-reject">
-                                <strong>Decisión:</strong> El valor de Chi-cuadrado calculado es representativo. Se concluye con un 95% de confianza que **el uso de IA y la procrastinación académica están significativamente asociados**.
+                                <strong>Decisión:</strong> El valor de Chi-cuadrado calculado es de 9.21. Se concluye con un 95% de confianza que **el uso de IA y la procrastinación académica están significativamente asociados**.
                             </div>
                         </div>
                     </div>
@@ -716,6 +1178,54 @@
             tabContents.forEach(content => content.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
         }
+
+        // Presentation Slide Navigation
+        let currentSlideIdx = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.getElementById('slide-dots-container');
+
+        // Populate dots
+        slides.forEach((_, idx) => {
+            const dot = document.createElement('div');
+            dot.className = `slide-dot ${idx === 0 ? 'active' : ''}`;
+            dot.onclick = () => goToSlide(idx);
+            dotsContainer.appendChild(dot);
+        });
+
+        function changeSlide(direction) {
+            const nextIdx = currentSlideIdx + direction;
+            if (nextIdx >= 0 && nextIdx < slides.length) {
+                goToSlide(nextIdx);
+            }
+        }
+
+        function goToSlide(idx) {
+            slides[currentSlideIdx].classList.remove('active');
+            document.querySelectorAll('.slide-dot')[currentSlideIdx].classList.remove('active');
+
+            currentSlideIdx = idx;
+            slides[currentSlideIdx].addClass = slides[currentSlideIdx].classList.add('active');
+            document.querySelectorAll('.slide-dot')[currentSlideIdx].classList.add('active');
+
+            // Button states
+            document.getElementById('btn-prev').disabled = currentSlideIdx === 0;
+            document.getElementById('btn-next').disabled = currentSlideIdx === slides.length - 1;
+        }
+
+        // Keyboard Arrow Key Listener for Slide Navigation
+        document.addEventListener('keydown', function(event) {
+            const presentationTab = document.getElementById('presentation');
+            if (presentationTab.classList.contains('active')) {
+                if (event.key === 'ArrowRight') {
+                    changeSlide(1);
+                } else if (event.key === 'ArrowLeft') {
+                    changeSlide(-1);
+                }
+            }
+        });
+
+        // Initialize button states
+        document.getElementById('btn-prev').disabled = true;
 
         // Initialize Charts on Load
         window.onload = function() {
